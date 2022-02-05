@@ -1,4 +1,6 @@
 import threading
+
+import matplotlib.pyplot as plt
 import pandas as pd
 from datetime import datetime
 from binance import ThreadedWebsocketManager, Client
@@ -49,9 +51,10 @@ class CryptoBot:
 
         self.graph_handler = GraphHandler(df)
 
+        print('before socket')
         self.twm.start_kline_socket(callback=self.handle_socket, symbol=self.coin_symbol)
+        print('socket')
 
-    # then start receiving messages
     def handle_socket(self, msg):
         print('handling socket...')
         candle = pd.json_normalize(msg['k'])
@@ -69,7 +72,4 @@ class CryptoBot:
             print('bot stopped due to lacking of investment, sorry for your lost :(')
 
         else:
-            if self.graph_handler is not None:
-                self.graph_handler.update_df(new_df)
-            else:
-                print('graph_handler is None')
+            threading.Thread(target=self.graph_handler.update_df, args=(new_df,)).start()

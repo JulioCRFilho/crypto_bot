@@ -1,12 +1,6 @@
-import pandas as pd
-
-from pandas import DataFrame
-
-from trader import Trader
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-
-#%matplotlib qt
+from pandas import DataFrame
 
 plt.style.use('fivethirtyeight')
 
@@ -16,23 +10,22 @@ class GraphHandler:
 
     def __init__(self, df: DataFrame):
         self.df = df
-        self.trader = Trader()
+        # self.trader = Trader()
         self.main()
 
     def main(self):
         self.ani = FuncAnimation(plt.gcf(), self.animate, interval=1000)
+        plt.ion()
 
-        plt.tight_layout()
-        plt.show()
+        plt.pause(0.001)
 
     def update_trader(self, candle):
         self.trader.update(candle)
 
     def animate(self, i):
-        plt.cla()
-        plt.plot(self.df.closeTime.tail(10), self.df.close.tail(10))
+        # plt.cla()
+        plt.plot(self.df.closeTime.tail(15), self.df.close.tail(15))
+        plt.pause(0.001)
 
     def update_df(self, new_df):
-        print(f'atualizou {new_df.close}')
         self.df.append(new_df)
-

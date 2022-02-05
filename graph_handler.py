@@ -14,19 +14,15 @@ class GraphHandler:
         self.main()
 
     def main(self):
-        print('0')
         self.ani = FuncAnimation(plt.gcf(), self.animate, interval=1000)
-        print('1')
         plt.ion()
-        print('2')
         plt.pause(0.001)
-        print('3')
 
     def update_trader(self, candle):
         self.trader.update(candle)
 
     def animate(self, i):
-        # plt.cla()
+        plt.cla()
         plt.plot(self.df.closeTime.tail(15), self.df.close.tail(15))
         plt.pause(0.001)
 

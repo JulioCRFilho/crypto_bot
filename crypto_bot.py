@@ -51,7 +51,7 @@ class CryptoBot:
             while True:
                 msg = await live.recv()
                 print(f'msg {msg}')
-                new_df = pd.DataFrame(msg, index=msg['i'])
+                new_df = pd.DataFrame(msg, columns=msg.keys(), index=[msg['T']])
                 print(f'new_df {new_df}')
                 return
 

@@ -72,4 +72,4 @@ class CryptoBot:
             print('bot stopped due to lacking of investment, sorry for your lost :(')
 
         else:
-            threading.Thread(target=self.graph_handler.update_df, args=(new_df,)).start()
+            self.graph_handler.update_df(new_df)

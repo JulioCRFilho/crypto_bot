@@ -50,12 +50,8 @@ class CryptoBot:
         async with self.ts as live:
             while True:
                 msg = await live.recv()
-                print(f'msg {msg}')
-                new_df = pd.DataFrame(msg, columns=msg.keys(), index=[msg['T']])
-                print(f'new_df {new_df}')
-                return
+                candle = pd.DataFrame(msg, columns=msg.keys(), index=[msg['T']])
 
-                candle = pd.json_normalize(msg['k'])
                 mapped = map_dataframe(candle)
                 new_df = pd.DataFrame(mapped,
                                       columns=['dateTime', 'open', 'high', 'low', 'close', 'volume', 'closeTime'])
@@ -67,11 +63,13 @@ class CryptoBot:
                     return
 
                 if self.investment_value <= 0 and self.in_position is None:
-                    self.BSM.stop()
+                    self.client.close_connection()
+                    self.graph_handler = None
                     print('bot stopped due to lacking of investment, sorry for your lost :(')
 
                 else:
-                    self.graph_handler.update_df(new_df)
+                    if self.graph_handler is not None:
+                        self.graph_handler.update_df(new_df)
 
     def exit_handler(self):
         loop = asyncio.get_event_loop()

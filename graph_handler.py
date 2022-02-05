@@ -22,7 +22,7 @@ class GraphHandler:
         self.trader.update(candle)
 
     def animate(self, i):
-        plt.cla()
+        # plt.cla()
         plt.plot(self.df.closeTime.tail(15), self.df.close.tail(15))
         plt.pause(0.001)
 

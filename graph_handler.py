@@ -14,19 +14,16 @@ class GraphHandler:
         self.main()
 
     def main(self):
-        # plt.ion()z
-        # self.ani = FuncAnimation(plt.gcf(), self.animate, interval=1000)
-        # plt.pause(0.0001)
         plt.show(block=False)
 
     def update_trader(self, candle):
         self.trader.update(candle)
 
     def animate(self):
-        plt.cla()
-        print(f'last {self.df.closeTime.head(1)}')
-        plt.plot(self.df.closeTime.tail(15), self.df.close.tail(15))
-        plt.draw()
+        # plt.cla()
+        print(f'time: {self.df.tail(1).closeTime} && {self.df.tail(1).close}')
+        plt.plot(self.df.tail(15).closeTime, self.df.tail(15).close)
+        # plt.draw()
         plt.pause(0.0001)
 
     def update_df(self, new_df):

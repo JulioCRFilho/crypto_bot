@@ -5,7 +5,7 @@ from datetime import datetime
 from binance import Client, BinanceSocketManager, AsyncClient
 from constants import get_api_key, get_secret_key
 from graph_handler import GraphHandler
-from utils import map_dataframe
+from utils import map_kline
 
 
 class CryptoBot:
@@ -18,7 +18,7 @@ class CryptoBot:
     async def main(self):
         atexit.register(self.exit_handler)
 
-        self.coin_symbol = 'ETHUSDT'  # input('Insira o símbolo da moeda que deseja negociar: ')
+        self.coin_symbol = 'BTCUSDT'  # input('Insira o símbolo da moeda que deseja negociar: ')
         self.investment_value = 50  # float(input('Insira o valor que deseja investir em dolar: '))
         self.initial_investment = self.investment_value
 
@@ -42,7 +42,7 @@ class CryptoBot:
         df.close = df.close.astype(float)
 
         self.graph_handler = GraphHandler(df)
-        self.ts = self.BSM.trade_socket(self.coin_symbol)
+        self.ts = self.BSM.kline_socket(self.coin_symbol)
 
         await self.handle_socket()
 
@@ -50,11 +50,10 @@ class CryptoBot:
         async with self.ts as live:
             while True:
                 msg = await live.recv()
-                candle = pd.DataFrame(msg, columns=msg.keys(), index=[msg['T']])
-
-                mapped = map_dataframe(candle)
-                new_df = pd.DataFrame(mapped,
+                mapped = map_kline(msg['k'])
+                new_df = pd.DataFrame(mapped, index=[mapped['closeTime']],
                                       columns=['dateTime', 'open', 'high', 'low', 'close', 'volume', 'closeTime'])
+
                 new_df.closeTime = pd.to_datetime(new_df.closeTime, unit='ms')
                 new_df.close = new_df.close.astype(float)
 
@@ -76,6 +75,5 @@ class CryptoBot:
         loop.run_until_complete(self.kill_connection())
 
     async def kill_connection(self):
-        print('handler ended')
         await self.client.close_connection()
 

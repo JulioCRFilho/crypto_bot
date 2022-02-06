@@ -20,12 +20,10 @@ class GraphHandler:
         self.trader.update(candle)
 
     def animate(self):
-        # plt.cla()
-        print(f'time: {self.df.tail(1).closeTime} && {self.df.tail(1).close}')
-        plt.plot(self.df.tail(15).closeTime, self.df.tail(15).close)
-        # plt.draw()
+        plt.cla()
+        plt.plot(self.df.tail(30).closeTime, self.df.tail(30).close)
         plt.pause(0.0001)
 
     def update_df(self, new_df):
-        self.df.append(new_df, ignore_index=True)
+        self.df = self.df.append(new_df, ignore_index=True)
         self.animate()

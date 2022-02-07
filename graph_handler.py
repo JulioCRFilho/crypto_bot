@@ -6,7 +6,7 @@ plt.style.use('fivethirtyeight')
 
 
 class GraphHandler:
-    df = ani = trader = None
+    df = ani = trader = fig = ax = bp = None
 
     def __init__(self, df: DataFrame):
         self.df = df
@@ -14,14 +14,15 @@ class GraphHandler:
         self.main()
 
     def main(self):
+        self.bp = plt.boxplot(self.df.candles, labels=self.df.time)
         plt.show(block=False)
 
     def update_trader(self, candle):
         self.trader.update(candle)
 
     def animate(self):
-        plt.cla()
-        plt.plot(self.df.tail(30).closeTime, self.df.tail(30).close)
+        # plt.cla()
+        # self.bp = self.ax.boxplot(self.df.close)
         plt.pause(0.0001)
 
     def update_df(self, new_df):

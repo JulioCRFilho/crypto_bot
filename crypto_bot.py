@@ -41,7 +41,7 @@ class CryptoBot:
         df.closeTime = pd.to_datetime(df.closeTime, unit='ms')
         df.close = df.close.astype(float)
 
-        self.graph_handler = GraphHandler(df)
+        self.graph_handler = GraphHandler(df, self.coin_symbol)
         self.ts = self.BSM.kline_socket(self.coin_symbol)
 
         await self.handle_socket()

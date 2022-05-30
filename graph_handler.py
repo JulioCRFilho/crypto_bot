@@ -8,7 +8,7 @@ plt.style.use('ggplot')
 
 
 class GraphHandler:
-    df = trader = ohlc = fig = ax = coin_symbol = None
+    df = ohlc = fig = s = coin_symbol = None
 
     def __init__(self, df: DataFrame, coin_symbol: str):
         self.df = df
@@ -17,27 +17,24 @@ class GraphHandler:
         self.main()
 
     def main(self):
-        self.df.index.name = 'Date'
-        self.df.dateTime = pandas.DatetimeIndex(self.df.closeTime)
-        self.df.set_index('dateTime', inplace=True)
-        self.df.open = self.df.open.astype(float)
-        self.df.high = self.df.high.astype(float)
-        self.df.low = self.df.low.astype(float)
-        self.df.close = self.df.close.astype(float)
-        self.df.volume = self.df.volume.astype(float)
+        self.df = self.format_df(self.df)
 
         mc = mpl.make_marketcolors(up='g', down='r')
-        s = mpl.make_mpf_style(marketcolors=mc)
-        mpl.plot(self.df.tail(30), type='candle', style=s)
-
-    def update_trader(self, candle):
-        self.trader.update(candle)
-
-    def animate(self):
-        # plt.cla()
-        # self.bp = self.ax.boxplot(self.df)
-        plt.pause(0.0001)
+        self.s = mpl.make_mpf_style(marketcolors=mc)
+        mpl.plot(self.df.tail(30), type='candle', style=self.s)
 
     def update_df(self, new_df):
-        self.df = self.df.append(new_df, ignore_index=True)
-        self.animate()
+        formatted = self.format_df(new_df)
+        self.df = self.df.append(formatted)
+        mpl.make_addplot(formatted)
+
+    def format_df(self, df):
+        df.index.name = 'Date'
+        df.dateTime = pandas.DatetimeIndex(self.df.closeTime)
+        df.set_index('dateTime', inplace=True)
+        df.open = self.df.open.astype(float)
+        df.high = self.df.high.astype(float)
+        df.low = self.df.low.astype(float)
+        df.close = self.df.close.astype(float)
+        df.volume = self.df.volume.astype(float)
+        return df

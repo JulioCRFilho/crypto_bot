@@ -1,10 +1,13 @@
 import asyncio
+from threading import Thread
+
 import pandas as pd
 import atexit
 from datetime import datetime
 from binance import Client, BinanceSocketManager, AsyncClient
 from constants import get_api_key, get_secret_key
 from graph_handler import GraphHandler
+from trader import Trader
 from utils import map_kline
 
 
@@ -13,7 +16,7 @@ class CryptoBot:
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.main())
 
-    coin_symbol = investment_value = initial_investment = BSM = ts = client = in_position = graph_handler = None
+    coin_symbol = investment_value = initial_investment = BSM = ts = client = in_position = graph_handler = trader = None
 
     async def main(self):
         atexit.register(self.exit_handler)
@@ -41,7 +44,9 @@ class CryptoBot:
         df.closeTime = pd.to_datetime(df.closeTime, unit='ms')
         df.close = df.close.astype(float)
 
-        self.graph_handler = GraphHandler(df, self.coin_symbol)
+        # self.graph_handler = GraphHandler(df, self.coin_symbol)
+        self.trader = Trader(df)
+
         self.ts = self.BSM.kline_socket(self.coin_symbol)
 
         await self.handle_socket()
@@ -68,7 +73,11 @@ class CryptoBot:
 
                 else:
                     if self.graph_handler is not None:
-                        self.graph_handler.update_df(new_df)
+                        # self.graph_handler.update_df(new_df)
+                        pass
+
+                    if self.trader is not None:
+                        self.trader.update(new_df)
 
     def exit_handler(self):
         loop = asyncio.get_event_loop()
